@@ -27,6 +27,9 @@ dependencies = [
 [project.optional-dependencies]
 examples = ["scikit-learn>=1.2", "shap>=0.42"]
 dev = ["pytest>=7", "scikit-learn>=1.2"]
+# Confere columns.py contra o dicionário oficial do IBGE (scripts/validar_dicionario.py).
+# Baixa do FTP público: não exige conta no Google Cloud.
+validation = ["pnadium>=0.25"]
 
 [project.urls]
 Homepage = "https://github.com/Brunooliveirab/pnadtables"

@@ -21,7 +21,7 @@ Open gates before `v0.1.0` (see [`pnadtables-plano.md`](pnadtables-plano.md)):
 | Gate | What it requires | Status |
 |---|---|---|
 | G0 | Git repository, correct metadata, no secrets | ✅ |
-| G1 | Schema and value domains confirmed against the IBGE dictionary; one real small query | ⬜ |
+| G1 | Schema and value domains confirmed against the IBGE dictionary; one real small query | 🟨 names/meanings verified ([report](docs/validacao-dicionario.md)); value domains and a real query still open |
 | G2 | Deterministic encoding, missingness policy, weight validation, integration tests | ⬜ |
 | G3 | Leakage-free splits, survey-design protocol, metrics with uncertainty | ⬜ |
 | G4 | Reproducible real-data baseline with a results table | ⬜ |
@@ -115,9 +115,11 @@ is columnar and bills by columns read, so that alone would cost orders of magnit
 
 ## Before you publish numbers
 
-1. Run `inspect_schema(billing_project_id)` and confirm every column name in
-   `pnadtables/columns.py` against your BigQuery environment **and** the official IBGE
-   dictionary for each year you use. All names live in that single file.
+1. Run `python scripts/validar_dicionario.py` (needs no GCP account — it reads the IBGE
+   dictionary from the public FTP) and then `inspect_schema(billing_project_id)`. The first
+   checks what each variable *means*; the second checks what exists in BigQuery and with
+   which type. They answer different questions and you need both. All names live in
+   `pnadtables/columns.py`.
 2. Set the income threshold in `make_pnad_income(threshold=...)` to the reference year of
    your data.
 3. Report results under **both** `raca_5grupos` and `raca_branca_negra`, and quantify how

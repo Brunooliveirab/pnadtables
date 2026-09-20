@@ -42,6 +42,53 @@ COL_RENDA_HAB = "vd4019"  # rendimento mensal habitual de todos os trabalhos (R$
 IDADE_TRABALHO = 14
 
 # ---------------------------------------------------------------------------
+# Identificadores de desenho amostral e de unidade.
+#
+# Necessários para inferência survey-aware (gate G3) e para splits sem
+# vazamento (gate G3). NÃO entram em DEFAULT_COLUMNS ainda: primeiro é preciso
+# confirmar que existem com esses nomes na tabela da Base dos Dados, que
+# padroniza parte das colunas e preserva o resto em minúsculas.
+# ---------------------------------------------------------------------------
+COL_UPA = "upa"            # Unidade Primária de Amostragem — conglomerado
+COL_DOMICILIO = "v1008"    # número de seleção do domicílio
+COL_PAINEL = "v1014"       # painel (rotação de domicílios)
+COL_ORDEM = "v2003"        # número de ordem da pessoa no domicílio
+
+# Chave de domicílio na PNADC: a combinação abaixo, e não v1008 sozinho.
+# É o que um split agrupado por domicílio precisa usar.
+CHAVE_DOMICILIO = (COL_UPA, COL_DOMICILIO, COL_PAINEL)
+
+# Pesos replicados V1028001..V1028200. O IBGE os fornece justamente para
+# estimação de variância sob o desenho amostral complexo; são o caminho para
+# intervalos de confiança corretos sem depender de estrato (que não existe
+# como variável no dicionário trimestral).
+N_PESOS_REPLICADOS = 200
+COLS_PESO_REPLICADO = tuple(f"v1028{i:03d}" for i in range(1, N_PESOS_REPLICADOS + 1))
+
+# ---------------------------------------------------------------------------
+# Declarações verificáveis.
+#
+# Mapeia cada coluna que o pacote usa ao que ele ASSUME que ela significa.
+# `scripts/validar_dicionario.py` confere isto contra o dicionário oficial da
+# PNADC. Trechos esperados são minúsculos e sem acento, e a checagem é por
+# substring — o objetivo é pegar troca de variável, não divergência redacional.
+# ---------------------------------------------------------------------------
+SIGNIFICADO_ESPERADO = {
+    COL_PESO: "peso do domicilio e das pessoas",
+    COL_SEXO: "sexo",
+    COL_IDADE: "idade do morador",
+    COL_RACA: "cor ou raca",
+    COL_INSTRUCAO: "nivel de instrucao",
+    COL_FORCA_TRAB: "condicao em relacao a forca de trabalho",
+    COL_OCUPACAO: "condicao de ocupacao",
+    COL_RENDA_HAB: "rendimento mensal habitual",
+    COL_UPA: "unidade primaria de amostragem",
+    COL_DOMICILIO: "numero de selecao do domicilio",
+    COL_PAINEL: "painel",
+    COL_ORDEM: "numero de ordem",
+}
+
+# ---------------------------------------------------------------------------
 # Mapas de valor (códigos -> rótulos)
 # ---------------------------------------------------------------------------
 SEXO = {1: "Homem", 2: "Mulher"}
