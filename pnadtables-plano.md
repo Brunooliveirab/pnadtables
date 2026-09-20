@@ -229,7 +229,23 @@ O pacote não pretende redistribuir microdados, mas isso **não autoriza conclui
 
 O PL 2338/2023 não deve ser descrito como obrigação vigente: em 20/09/2026, a [ficha oficial da Câmara](https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2487262) o apresenta em tramitação. A relação com LGPD, explicação e auditoria deve ser tratada como pergunta jurídica separada, com fontes e revisão especializada.
 
-O BigQuery oferece franquia mensal para consultas sob certas condições, mas custo não deve ser prometido como zero. A documentação oficial recomenda estimar bytes e usar limites de cobrança; ver [controle de custos do BigQuery](https://docs.cloud.google.com/bigquery/docs/best-practices-costs). O pacote deve oferecer dry run ou instrução equivalente e `maximum_bytes_billed` quando a biblioteca permitir.
+O BigQuery oferece franquia mensal para consultas sob certas condições, mas custo não deve ser prometido como zero. A documentação oficial recomenda estimar bytes e usar limites de cobrança; ver [controle de custos do BigQuery](https://docs.cloud.google.com/bigquery/docs/best-practices-costs).
+
+**Implementado em 20/09/2026.** `PNADCDataSource.dry_run()` estima os bytes sem executar (gratuito) e `get_data()` recusa consultas acima de `max_gb`, repassando o teto como `maximum_bytes_billed` para o BigQuery abortar do lado do servidor. `bd.read_sql` não expõe nenhum dos dois parâmetros — é um wrapper sobre `pandas.read_gbq` —, então essa camada usa `google.cloud.bigquery` direto, reaproveitando o fluxo de credenciais do `basedosdados`.
+
+### Ordem de grandeza levantada em 20/09/2026
+
+| Item | Valor |
+|---|---|
+| Preço on-demand do BigQuery | US$ 6,25 por TiB varrido |
+| Franquia mensal gratuita | 1 TiB por conta de faturamento |
+| 1 trimestre × 11 colunas (estimativa) | ~50 MB, ~0,005% da franquia |
+| Todas as safras × 11 colunas (estimativa) | ~2,5 GB, ~0,24% da franquia |
+| Microdados trimestrais no FTP do IBGE | ~200 MB por trimestre, download livre |
+
+As linhas marcadas como estimativa são aritmética a partir do tamanho da amostra (~211 mil domicílios por trimestre) e precisam ser confirmadas por `dry_run()` — que é gratuito — assim que houver projeto de billing.
+
+**Custo recorrente do mantenedor é zero.** Não há servidor, hospedagem nem API própria: cada pessoa que usa o pacote consulta a tabela pública pelo projeto dela. O gasto do mantenedor se limita à validação do G1 e ao baseline do G4, ambos dentro da franquia gratuita pela estimativa acima.
 
 ---
 

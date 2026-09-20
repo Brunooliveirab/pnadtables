@@ -12,8 +12,18 @@ Exemplo mínimo:
     X, y, group, weight = PNADEmployment.df_to_pandas(src.get_data())
 
 A tupla tem 4 elementos (o folktables devolve 3): o quarto é o peso amostral.
+
+CUSTO: no BigQuery a consulta é cobrada de quem consulta. `get_data()` estima
+os bytes por dry run (gratuito) e recusa a consulta acima de um teto. Ver
+`data_source` para detalhes.
 """
-from .data_source import PNADCDataSource, inspect_schema
+from .data_source import (
+    PNADCDataSource,
+    inspect_schema,
+    CostEstimate,
+    QueryTooLargeError,
+    DEFAULT_MAX_GB,
+)
 from .problems import BasicProblem, PNADEmployment, PNADIncome, make_pnad_income
 from .metrics import (
     audit_report,
@@ -26,6 +36,9 @@ from . import columns
 __all__ = [
     "PNADCDataSource",
     "inspect_schema",
+    "CostEstimate",
+    "QueryTooLargeError",
+    "DEFAULT_MAX_GB",
     "BasicProblem",
     "PNADEmployment",
     "PNADIncome",

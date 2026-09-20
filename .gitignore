@@ -16,6 +16,9 @@ dist/
 # Configuração local de ferramenta, não faz parte do pacote.
 .claude/
 
-# Artefato original do pacote, mantido fora do controle de versão:
-# a árvore descompactada neste repositório é a fonte canônica (gate G0).
-pnadtables.zip
+# Microdados baixados localmente — NUNCA versionar.
+# O projeto não redistribui dado algum: nem PNADC (IBGE/Base dos Dados) nem
+# ACS/PUMS (o folktables baixa para data/ ao chamar get_data(download=True)).
+data/
+*.csv
+*.zip

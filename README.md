@@ -83,10 +83,35 @@ pip install "pnadtables[examples]"   # adds scikit-learn + shap for example_audi
 ```
 
 You need a Google Cloud project for BigQuery billing (`billing_project_id`). The microdata
-are public, but **queries are billed to your project**. BigQuery offers a monthly free tier
-under certain conditions; do not assume your cost will be zero. Estimate scanned bytes with
-a dry run, restrict year/quarter/UF, and set a billing limit — see
-[BigQuery cost controls](https://docs.cloud.google.com/bigquery/docs/best-practices-costs).
+are public, but **queries are billed to whoever runs them** — your project, not ours. There
+is no server and no hosting: you install the package and query the public table yourself.
+
+### Cost control
+
+`get_data()` never runs a query blind. It first performs a BigQuery **dry run**, which is
+free and reads no data, and refuses the query if it would scan more than `max_gb`. The same
+ceiling is passed to BigQuery as `maximum_bytes_billed`, so the server aborts the query even
+if the estimate was wrong.
+
+```python
+src = PNADCDataSource(billing_project_id="my-gcp-project", ano=2024,
+                      trimestre=1, ufs=["MT", "SP"])
+
+print(src.dry_run())     # free: what this query would cost, before running it
+df = src.get_data()      # refuses above DEFAULT_MAX_GB (5 GB)
+df = src.get_data(max_gb=20)   # raise the ceiling deliberately
+df = src.get_data(max_gb=None) # disable both guards — know what you are doing
+```
+
+For scale: BigQuery on-demand charges **US$ 6.25 per TiB scanned**, with **1 TiB free per
+month** per billing account. One quarter with the 11 columns in `DEFAULT_COLUMNS` is on the
+order of tens of MB — a small fraction of the free tier. Verify with `dry_run()` rather than
+trusting that estimate, and set a billing limit on the project anyway. See
+[BigQuery pricing](https://cloud.google.com/bigquery/pricing) and
+[cost controls](https://docs.cloud.google.com/bigquery/docs/best-practices-costs).
+
+The query selects only the columns a task needs. Never replace it with `SELECT *`: BigQuery
+is columnar and bills by columns read, so that alone would cost orders of magnitude more.
 
 ## Before you publish numbers
 

@@ -31,10 +31,26 @@ DATASHEET.md        # decisões metodológicas (cor/raça, peso)
 pip install basedosdados pandas numpy scikit-learn
 pip install shap   # opcional, para a etapa de explicabilidade
 ```
-É preciso um projeto no Google Cloud (`billing_project_id`). **A consulta é cobrada no seu
-projeto.** O BigQuery tem franquia mensal sob certas condições, mas não conte com custo
-zero: estime os bytes com dry run, restrinja ano/trimestre/UF e configure um limite de
-cobrança ([controle de custos do BigQuery](https://docs.cloud.google.com/bigquery/docs/best-practices-costs)).
+É preciso um projeto no Google Cloud (`billing_project_id`). **A consulta é cobrada de quem
+a executa** — não há servidor nem hospedagem deste projeto: você instala o pacote e consulta
+a tabela pública por conta própria.
+
+`get_data()` nunca executa às cegas: faz antes um **dry run** (gratuito, não lê dado algum),
+mostra quantos bytes a consulta varreria e recusa se passar de `max_gb`. O mesmo teto vai
+como `maximum_bytes_billed` para o BigQuery, que aborta do lado do servidor se a estimativa
+estiver errada.
+
+```python
+print(src.dry_run())            # gratuito: quanto custaria
+df = src.get_data()             # recusa acima de DEFAULT_MAX_GB (5 GB)
+df = src.get_data(max_gb=20)    # eleva o teto deliberadamente
+df = src.get_data(max_gb=None)  # desativa as duas proteções
+```
+
+Ordem de grandeza: o BigQuery cobra **US$ 6,25 por TiB varrido**, com **1 TiB por mês
+gratuito** por conta de faturamento. Um trimestre com as 11 colunas de `DEFAULT_COLUMNS`
+fica na casa de dezenas de MB. Confirme com `dry_run()` em vez de confiar na estimativa, e
+configure um limite de cobrança no projeto de qualquer forma.
 
 ## Passo a passo
 ```python
