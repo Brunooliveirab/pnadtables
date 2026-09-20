@@ -74,13 +74,13 @@ O artefato completo estava em `pnadtables.zip`. **Em 20/09/2026 o G0 foi fechado
 
 - o ZIP contém pacote, testes, CI, READMEs, datasheet, licença, `pyproject.toml` e `CITATION.cff`;
 - `pytest -q`: **16 testes aprovados** com dados sintéticos (10 originais + 6 regressões do G0);
-- `python -m build --no-isolation`: **sdist e wheel construídos com sucesso**;
+- `python -m build --no-isolation` + `twine check`: **sdist e wheel construídos e validados**;
+- **CI verde no GitHub** (run 35528500869, 20/09/2026): testes em Python 3.9, 3.11 e 3.12 e job de build, todos aprovados;
 - existe correção para evitar que `sigla_uf` vire uma coluna toda `NaN`;
 - as métricas atuais aceitam `weight`.
 
 ### Ainda não demonstrado
 
-- execução de CI no GitHub; portanto, o item “badge verde” não está concluído;
 - consulta real à Base dos Dados/BigQuery;
 - validade dos nomes, tipos e categorias das variáveis em cada safra;
 - compatibilidade do cliente `basedosdados` em ambiente limpo;
@@ -208,12 +208,12 @@ SHAP/LIME não é requisito do primeiro benchmark. Explicabilidade só entra qua
 | G2 — correção | encoding determinístico; missingness e validação de pesos; testes de integração | ⬜ |
 | G3 — metodologia | splits sem vazamento; protocolo de peso/desenho; métricas e incerteza definidos | ⬜ |
 | G4 — evidência | notebook/script reproduzível com baseline real e tabela no README | ⬜ |
-| G5 — engenharia | testes em Python suportado, build e instalação limpa passam no CI | ⬜ |
+| G5 — engenharia | testes em Python suportado, build e instalação limpa passam no CI | 🟨 CI verde 20/09/2026; falta instalação limpa com `basedosdados` |
 | G6 — documentação | datasheet completo, limitações, proveniência, licenças/termos verificados | ⬜ |
 | G7 — publicação | repo público, tag `v0.1.0`, release arquivada e DOI | ⬜ |
 | G8 — distribuição | publicação no PyPI e teste de `pip install pnadtables` | ⬜ |
 
-Os 16 testes locais e o build bem-sucedido são evidência preparatória, mas não fecham G5 porque ainda não houve CI nem instalação a partir do artefato publicado.
+O CI verde fecha a parte de testes do G5, mas **o gate continua aberto**: falta verificar que `basedosdados>=2.0` instala em ambiente limpo em todas as versões declaradas de Python e que a instalação a partir do wheel/sdist funciona com import e uso mínimo. O CI atual roda offline com o stub de `tests/conftest.py`, então ele não é evidência sobre o cliente real nem sobre o esquema (G1).
 
 ---
 
