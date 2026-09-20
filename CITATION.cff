@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use pnadtables in your research, please cite it as below. NOTE: no release has been published yet; this is pre-release software (see README, section 'Status')."
+title: "pnadtables: folktables-inspired fairness benchmark tasks on Brazilian PNAD Contínua microdata"
+type: software
+authors:
+  - family-names: Oliveira
+    given-names: Bruno H. M.
+version: 0.1.0.dev0
+license: MIT
+repository-code: "https://github.com/Brunooliveirab/pnadtables"
+keywords:
+  - algorithmic fairness
+  - benchmark
+  - census microdata
+  - Brazil
+  - PNAD Contínua
+references:
+  - type: conference-paper
+    title: "Retiring Adult: New Datasets for Fair Machine Learning"
+    authors:
+      - family-names: Ding
+        given-names: Frances
+      - family-names: Hardt
+        given-names: Moritz
+      - family-names: Miller
+        given-names: John
+      - family-names: Schmidt
+        given-names: Ludwig
+    year: 2021
+    collection-title: "Advances in Neural Information Processing Systems 34"

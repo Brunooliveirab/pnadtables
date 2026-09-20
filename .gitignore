@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+.env
+
+# Credenciais do Google Cloud — nunca commitar.
+# (.gitignore não aceita comentário na mesma linha do padrão.)
+*.json
+!CITATION.cff
+
+# Configuração local de ferramenta, não faz parte do pacote.
+.claude/
+
+# Artefato original do pacote, mantido fora do controle de versão:
+# a árvore descompactada neste repositório é a fonte canônica (gate G0).
+pnadtables.zip

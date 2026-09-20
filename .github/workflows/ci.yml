@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      # `basedosdados` não é instalado: os testes rodam offline com o stub em
+      # tests/conftest.py. Isso cobre a lógica, NÃO o esquema real (gate G1).
+      - run: pip install --upgrade pip
+      - run: pip install -e . --no-deps
+      - run: pip install pandas numpy pytest
+      - run: pytest -q
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --upgrade pip build twine
+      - run: python -m build
+      - run: twine check dist/*
